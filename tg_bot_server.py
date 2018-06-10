@@ -65,7 +65,7 @@ def msg_callback(bot, update):
                 update.channel_post.forward(key, disable_notification=False)
                 print('forward msg: ', update.channel_post.text, ' from: ', update.chanel_post.chat_id, ' to: ', val)
             except:
-                print('forward msg failed: chat_id: %{chat_id}s' % {'chat_id' : key})
+                print('forward msg failed: chat_id: %(chat_id)s' % {'chat_id' : key})
 
 
 if __name__ == "__main__":
@@ -86,3 +86,4 @@ if __name__ == "__main__":
     updater.idle()
 
     print("Main exit")
+
