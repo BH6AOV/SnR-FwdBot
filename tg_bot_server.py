@@ -54,7 +54,7 @@ def help_callback(bot, update):
     update.message.reply_text('''坐和放宽联盟SitandRelax Union消息聚合机器人
 功能介绍：此机器人为坐和放宽联盟（SitandRelax Union）频道消息整合服务。
 您可以不必分别关注联盟的许多channel，一样可以畅快的阅读联盟提供的各种资讯。
-使用方法：您只需要/start我，或者把我拉到您的群中，并/start即可。''')
+使用方法：您只需要/start我，或者把 @snr_union_bot 拉到您的群中并/start，或者关注 @sitandrelaxunionint 均可。''')
 
 
 def msg_callback(bot, update):
@@ -66,7 +66,10 @@ def msg_callback(bot, update):
                 print('forward msg: ', update.channel_post.text, ' from: ', update.chanel_post.chat_id, ' to: ', val)
             except:
                 print('forward msg failed: chat_id: %(chat_id)s' % {'chat_id' : key})
-
+        try:
+            bot.forwardMessage('@sitandrelaxunionint', from_chat_id=update.chanel_post.chat_id, disable_notification=False, message_id=update.channel_post.message_id)
+        except:
+            print('forward msg to @sitandrelaxunionint failed')
 
 if __name__ == "__main__":
 
