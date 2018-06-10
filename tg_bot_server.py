@@ -60,10 +60,14 @@ def help_callback(bot, update):
 def msg_callback(bot, update):
     global chat_ids_
     if update.channel_post is not None:
+        print('recvice msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' chat_id: ', str(update.chanel_post.chat.id))
+        if str(update.chanel_post.chat.id) not in config.auth_channel_id:
+            print('recvice unauth channel msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' chat_id: ', str(update.chanel_post.chat.id))
+            return
         for key,val in chat_ids_.items():
             try:
                 update.channel_post.forward(key, disable_notification=False)
-                print('forward msg: ', update.channel_post.text, ' from: ', update.chanel_post.chat_id, ' to: ', val)
+                print('forward msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' to: ', key)
             except:
                 print('forward msg failed: chat_id: %(chat_id)s' % {'chat_id' : key})
         try:
