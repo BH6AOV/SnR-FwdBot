@@ -5,10 +5,13 @@ import json
 import telegram
 import config
 import os
+import logger
 from telegram.ext import Updater, CommandHandler, MessageHandler, InlineQueryHandler, CallbackQueryHandler
 from telegram.bot import Bot
 
+bot_ = None
 chat_ids_ = {}
+logger_ = logger.create_logger("snr_bot_logs")
 
 
 def save_chat_ids_to_file():
@@ -30,8 +33,10 @@ def load_chat_ids_from_file():
 
 def start_callback(bot, update):
     global chat_ids_
+    global logger_
     try:
         chat_ids_[update.message.chat_id] = update.message.from_user.id
+        logger_.info('/start chat_id: ' + str(update.message.chat_id))
         update.message.reply_text('''
 恭喜订阅成功(chatid: %(chat_id)s)
 使用方法：您只需要/start我，或者把我拉到您的群中，并/start即可。''' % {'chat_id' : update.message.chat_id})
@@ -42,8 +47,10 @@ def start_callback(bot, update):
 
 def stop_callback(bot, update):
     global chat_ids_
+    global logger_
     try:
         chat_ids_.pop(update.message.chat_id)
+        logger_.info('/stop chat_id: ' + str(update.message.chat_id))
         update.message.reply_text('谢谢您的使用，再见')
         save_chat_ids_to_file()
     except:
@@ -59,21 +66,22 @@ def help_callback(bot, update):
 
 def msg_callback(bot, update):
     global chat_ids_
+    global logger_
     if update.channel_post is not None:
-        print('recvice msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' chat_id: ', str(update.chanel_post.chat.id))
-        if str(update.chanel_post.chat.id) not in config.auth_channel_id:
-            print('recvice unauth channel msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' chat_id: ', str(update.chanel_post.chat.id))
+        logger_.info('recvice from: ' + str(update.channel_post.chat.username) + ' chat_id: ' + str(update.channel_post.chat.id) + '  msg: ' + update.channel_post.text)
+        if str(update.channel_post.chat.id) not in config.auth_channel_id:
+            logger_.info('recvice from username: ' + str(update.channel_post.chat.username) + ' chat_id: ' + str(update.channel_post.chat.id) + ' unauth channel msg ' + update.channel_post.text)
             return
         for key,val in chat_ids_.items():
             try:
                 update.channel_post.forward(key, disable_notification=False)
-                print('forward msg: ', update.channel_post.text, ' from: ', str(update.chanel_post.chat.username), ' to: ', key)
+                logger_.info('forward from: ' + str(update.channel_post.chat.username) + ' to: ' + key + ' msg: ' + update.channel_post.text)
             except:
-                print('forward msg failed: chat_id: %(chat_id)s' % {'chat_id' : key})
+                logger_.error('forward msg failed: chat_id: %(chat_id)s' % {'chat_id' : key})
         try:
-            bot.forwardMessage('@sitandrelaxunionint', from_chat_id=update.chanel_post.chat_id, disable_notification=False, message_id=update.channel_post.message_id)
+            bot.forwardMessage('@sitandrelaxunionint', from_chat_id=update.channel_post.chat_id, disable_notification=False, message_id=update.channel_post.message_id)
         except:
-            print('forward msg to @sitandrelaxunionint failed')
+            logger_.error('forward msg to @sitandrelaxunionint failed')
 
 if __name__ == "__main__":
 
@@ -92,5 +100,6 @@ if __name__ == "__main__":
     updater.start_polling()
     updater.idle()
 
+    logger.shutdown_logger(logger_)
     print("Main exit")
 
