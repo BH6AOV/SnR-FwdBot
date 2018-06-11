@@ -1,2 +1,2 @@
 bot_token = 'bot token'
-auth_channel_id = {}  #e.g.   {'-1384657783':'channel_name'}
+auth_channel_id = {}  #e.g.   {'channel_username':'channel_name'}

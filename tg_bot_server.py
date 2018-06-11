@@ -69,8 +69,8 @@ def msg_callback(bot, update):
     global logger_
     if update.channel_post is not None:
         logger_.info('recvice from: ' + str(update.channel_post.chat.username) + ' chat_id: ' + str(update.channel_post.chat.id) + '  msg: ' + update.channel_post.text)
-        if str(update.channel_post.chat.id) not in config.auth_channel_id:
-            logger_.info('recvice from username: ' + str(update.channel_post.chat.username) + ' chat_id: ' + str(update.channel_post.chat.id) + ' unauth channel msg ' + update.channel_post.text)
+        if str(update.channel_post.chat.username) not in config.auth_channel_id:
+            logger_.info('recvice from username: ' + str(update.channel_post.chat.username) + ' chat_id: ' + str(update.channel_post.chat.id) + ' unauth channel msg: ' + update.channel_post.text)
             return
         for key,val in chat_ids_.items():
             try:
