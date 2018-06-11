@@ -35,12 +35,16 @@ def start_callback(bot, update):
     global chat_ids_
     global logger_
     try:
-        chat_ids_[update.message.chat_id] = update.message.from_user.id
-        logger_.info('/start chat_id: ' + str(update.message.chat_id))
-        update.message.reply_text('''
+        if update.message.chat_id not in chat_ids_:
+            chat_ids_[update.message.chat_id] = update.message.from_user.id
+            update.message.reply_text('''
 恭喜订阅成功(chatid: %(chat_id)s)
 使用方法：您只需要/start我，或者把我拉到您的群中，并/start即可。''' % {'chat_id' : update.message.chat_id})
-        save_chat_ids_to_file()
+            save_chat_ids_to_file()
+        else:
+            update.message.reply_text('您已订阅过该服务')
+        logger_.info('/start chat_id: ' + str(update.message.chat_id))
+
     except:
         pass
 
@@ -49,10 +53,13 @@ def stop_callback(bot, update):
     global chat_ids_
     global logger_
     try:
-        chat_ids_.pop(update.message.chat_id)
+        if update.message.chat_id in chat_ids_:
+            chat_ids_.pop(update.message.chat_id)
+            update.message.reply_text('谢谢您的使用，再见')
+            save_chat_ids_to_file()
+        else:
+            update.message.reply_text('您未曾订阅该服务')
         logger_.info('/stop chat_id: ' + str(update.message.chat_id))
-        update.message.reply_text('谢谢您的使用，再见')
-        save_chat_ids_to_file()
     except:
         pass
 
